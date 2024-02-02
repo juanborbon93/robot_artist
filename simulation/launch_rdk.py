@@ -11,6 +11,7 @@ STATION_PATH = Path(__file__).parent / "main_station.rdk"
 assert STATION_PATH.exists(), f"Station file not found at {STATION_PATH.absolute()}"
 
 def load_station():
+    """Loads the station from the file"""
     rdk = Robolink()
     rdk.Command("API_NODELAY","1")
     active_station = rdk.ActiveStation()

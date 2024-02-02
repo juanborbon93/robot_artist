@@ -8,8 +8,7 @@ def scale_contours_to_canvas(contours, canvas_width:float = 550.0, canvas_height
     with a margin around the edges.
     """
     
-    canvas_dims = (canvas_width, canvas_height)
-    canvas_dims = (canvas_dims[0] - margin*2, canvas_dims[1] - margin*2)
+    canvas_dims = (canvas_width - margin*2, canvas_height - margin*2)
 
     # find the pixel space bounding box of all of the contours
     min_x = min([np.min(contour[:, :, 0]) for contour in contours])

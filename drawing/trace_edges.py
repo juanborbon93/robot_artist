@@ -11,7 +11,7 @@ def trace_image(img:Image):
     # as array
     img_array = np.asarray(img_grayscale)
     # Convert image to binary using thresholding
-    _, binary = cv2.threshold(img_array, 200, 255, cv2.THRESH_BINARY_INV)
+    _, binary = cv2.threshold(img_array, 220, 255, cv2.THRESH_BINARY_INV)
     # Use cv2.findContours to find the outlines of the strokes
     contours, _ = cv2.findContours((binary * 255).astype(np.uint8), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     # sort contours by length

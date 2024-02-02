@@ -1,3 +1,20 @@
+"""
+This script runs a drawing robot that takes user input, generates a drawing based on the input,
+and then uses a robot to draw the generated image. The script uses audio prompts for user interaction,
+speech-to-text transcription for input, and various drawing and simulation modules for generating and
+executing the drawing.
+
+The main steps of the script include:
+1. Playing an audio prompt to ask the user what they would like the robot to draw.
+2. Recording and transcribing the user's response (or using a provided prompt).
+3. Generating a drawing based on the transcription.
+4. Tracing the edges of the generated image.
+5. Scaling the contours of the traced image to fit a canvas.
+6. Generating G-code instructions for the robot based on the scaled contours.
+7. Loading the robot simulation environment.
+8. Creating a robot program using the generated G-code and executing it.
+"""
+
 from project_init import SharedLogger
 
 log = SharedLogger.get_logger()
@@ -12,6 +29,7 @@ from simulation.launch_rdk import load_station
 from simulation.robot_program import make_robot_program
 
 recordings = Recordings.load()
+
 def play_audio_promp(text):
     log.info("Playing audio prompt...")
     settings = RecordingSetting(text=text)
@@ -19,11 +37,21 @@ def play_audio_promp(text):
     recording.play()
 
 if __name__ == "__main__":
-    play_audio_promp(text = "Hello! I am a drawing robot. What would you like me to draw?")
-    transcription = record_and_transcribe(10, "response.wav")
-    log.info(f"Transcription:\n{transcription}")
-    play_audio_promp(text = "Great! I will draw that for you. Please wait a moment.")
-    img = generate_drawing(transcription)
+    from argparse import ArgumentParser, RawDescriptionHelpFormatter
+    parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
+    parser.add_argument("--human-prompt", type=str, default=None, help="Prompt for the drawing (will use audio prompt if not provided)")
+    args = parser.parse_args()
+
+    
+    if args.human_prompt:
+        human_prompt = args.human_prompt
+    else:
+        play_audio_promp(text = "Hello! I am a drawing robot. What would you like me to draw?")
+        human_prompt = record_and_transcribe(10, "response.wav")
+        log.info(f"Transcription:\n{human_prompt}")
+        play_audio_promp(text = "Great! I will draw that for you. Please wait a moment.")
+    
+    img = generate_drawing(human_prompt)
     img.show()
     contours = trace_image(img)
     canvas_contours = scale_contours_to_canvas(contours)
