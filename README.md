@@ -1,14 +1,14 @@
 # Project Name
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
+![Alt text](simulation_img.png)
 ## Description
 
 The project aims to bring together art and technology by creating a drawing robot that can generate and execute drawings based on user natural language input. The goal is to explore the exciting combination of creativity and automation, allowing users to witness their ideas come to life through the precision and elegance of robotic drawing.
 
 From a technical standpoint, the project achieves a couple of things:
-- It utilizes audio prompts and speech-to-text transcription for user interaction, enabling a seamless and intuitive drawing experience. 
-- The script generates drawings based on user input and traces the edges of the generated image. 
+- It utilizes audio prompts and speech-to-text transcription for user interaction, enabling an interaction that feels more natural (compared to a command line interface). 
+- The script generates drawings (using OpenAI Dall-E) based on user input and traces the edges of the generated image. 
 - It also scales the contours to fit a canvas and generates G-code instructions for the robot. 
 - The project incorporates a robot simulation environment and executes the drawing using the generated G-code.
 
@@ -38,6 +38,10 @@ To install the RoboDK simulation software, follow these steps:
 3. Run the installer and follow the on-screen instructions.
 
 ## Usage
+- copy `.env.template` into `.env` and fill in the blank variables on the file
+- Launch Robodk. No need to open the station as it is loaded automatically later.
+- `cd` into the repository directory and run `source setup.sh` (this sets up your PYTHONPATH environment variable)
+- run `python3 run_drawing_robot.py`
 
 ```
 usage: run_drawing_robot.py [-h] [--human-prompt HUMAN_PROMPT]
@@ -55,8 +59,7 @@ The main steps of the script include:
 5. Scaling the contours of the traced image to fit a canvas.
 6. Generating G-code instructions for the robot based on the scaled contours.
 7. Loading the robot simulation environment.
-8. Playing an audio prompt to inform the user that the drawing is ready.
-9. Creating a robot program using the generated G-code and executing it.
+8. Creating a robot program using the generated G-code and executing it.
 
 options:
   -h, --help            show this help message and exit
