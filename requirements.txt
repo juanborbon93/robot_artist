@@ -1,0 +1,12 @@
+numpy==1.26.3
+openai==1.10.0
+openai_whisper==20231117
+opencv_contrib_python==4.9.0.80
+Pillow==10.2.0
+pydantic==2.6.0
+python-dotenv==1.0.1
+Requests==2.31.0
+robodk==5.6.8
+scipy==1.12.0
+sounddevice==0.4.6
+soundfile==0.12.1

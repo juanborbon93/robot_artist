@@ -1,0 +1,9 @@
+logs/*
+.venv/*
+*.pyc
+drawing/gcode/*
+text_to_speech/dictations/*
+experiments/*
+*.mp3
+*.wav
+*.env
