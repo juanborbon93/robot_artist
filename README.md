@@ -12,6 +12,9 @@ From a technical standpoint, the project achieves a couple of things:
 - It also scales the contours to fit a canvas and generates G-code instructions for the robot. 
 - The project incorporates a robot simulation environment and executes the drawing using the generated G-code.
 
+**WARNING: This project is intended for simulation purposes only. Operating real robot arms can be dangerous and should only be done by trained professionals in a controlled environment.**
+**Please do not attempt to use this code to operate real robot arms without proper training and precautions.**
+
 ## Table of Contents
 
 - [Installation](#installation)
