@@ -1,4 +1,4 @@
-# Project Name
+# Lenardo (robot artist)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
