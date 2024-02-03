@@ -1,7 +1,9 @@
 # Project Name
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-https://raw.githubusercontent.com/juanborbon93/robot_artist/main/demo.mov
+
+![demo animation](demo.gif)
+
 ## Description
 
 The project aims to bring together art and technology by creating a drawing robot that can generate and execute drawings based on natural language input. The goal is to explore the exciting combination of creativity and automation, allowing users to witness their ideas come to life through the precision and elegance of robotics.
