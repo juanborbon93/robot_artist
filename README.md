@@ -1,12 +1,12 @@
 # Project Name
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![Alt text](simulation_img.png)
+https://raw.githubusercontent.com/juanborbon93/robot_artist/main/demo.mov
 ## Description
 
-The project aims to bring together art and technology by creating a drawing robot that can generate and execute drawings based on user natural language input. The goal is to explore the exciting combination of creativity and automation, allowing users to witness their ideas come to life through the precision and elegance of robotic drawing.
+The project aims to bring together art and technology by creating a drawing robot that can generate and execute drawings based on natural language input. The goal is to explore the exciting combination of creativity and automation, allowing users to witness their ideas come to life through the precision and elegance of robotics.
 
-From a technical standpoint, the project achieves a couple of things:
+From a technical standpoint, the project does a couple of things:
 - It utilizes audio prompts and speech-to-text transcription for user interaction, enabling an interaction that feels more natural (compared to a command line interface). 
 - The script generates drawings (using OpenAI Dall-E) based on user input and traces the edges of the generated image. 
 - It also scales the contours to fit a canvas and generates G-code instructions for the robot. 
