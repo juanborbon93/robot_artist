@@ -5,7 +5,10 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 from datetime import datetime
-from __main__ import __file__ as module_name
+try:
+    from __main__ import __file__ as module_name
+except ImportError:
+    module_name = "unknown_module"
 
 module_name = Path(module_name).stem
 LOG_DIR = Path(__file__).parent / f"logs/{module_name}/"
@@ -20,6 +23,7 @@ class SharedLogger:
 
     @classmethod
     def get_logger(cls):
+        """Returns a shared logger instance. If it doesn't exist, creates one."""
         if cls._logger is None:
             cls._logger = logging.getLogger(module_name)  # Use module_name as the logger name
             cls._logger.setLevel(logging.DEBUG)
