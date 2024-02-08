@@ -26,7 +26,7 @@ from drawing.trace_edges import trace_image
 from drawing.canvas_scale import scale_contours_to_canvas
 from drawing.gcode import make_gcode
 from simulation.launch_rdk import load_station
-from simulation.robot_program import make_robot_program
+from simulation.robot_program import make_robot_program, draw_on_canvas
 
 recordings = Recordings.load()
 
@@ -40,9 +40,10 @@ if __name__ == "__main__":
     from argparse import ArgumentParser, RawDescriptionHelpFormatter
     parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("--human-prompt", type=str, default=None, help="Prompt for the drawing (will use audio prompt if not provided)")
+    parser.add_argument("--record-video", action="store_true", help="Record the drawing process")
     args = parser.parse_args()
 
-    
+    play_audio = args.human_prompt is None
     if args.human_prompt:
         human_prompt = args.human_prompt
     else:
@@ -53,12 +54,27 @@ if __name__ == "__main__":
     
     img = generate_drawing(human_prompt)
     img.show()
+    usr_in = input("Do you like the drawing? (y/n): ")
+    if usr_in.lower() != "y":
+        log.info("User did not like the drawing. Exiting...")
+        exit()
     contours = trace_image(img)
-    canvas_contours = scale_contours_to_canvas(contours)
+    canvas_contours = scale_contours_to_canvas(contours,margin=100,small_area_cutoff=6.0)
     gcode_file = make_gcode(canvas_contours)
     rdk = load_station()
-    play_audio_promp(text = "Drawing is ready. I will start drawing now.")
-    make_robot_program(gcode_file, rdk, run = True)
+    if play_audio:
+        play_audio_promp(text = "Drawing is ready. I will start drawing now.")
+    recorder = None
+    
+    prog = make_robot_program(gcode_file, rdk)
+    if args.record_video:
+        from recorder import RDKCameraRecorder
+        recorder = RDKCameraRecorder("Camera", rdk,5.0)
+        input("Press Enter to start recording")
+        recorder.start()
+    draw_on_canvas(rdk,prog)
+    if recorder:
+        recorder.stop()
 
 
 
