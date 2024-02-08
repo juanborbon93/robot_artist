@@ -40,6 +40,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser, RawDescriptionHelpFormatter
     parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("--human-prompt", type=str, default=None, help="Prompt for the drawing (will use audio prompt if not provided)")
+    # Note: this option does not always work quite right. Still figuring out how to make it work consistently.
     parser.add_argument("--record-video", action="store_true", help="Record the drawing process")
     args = parser.parse_args()
 
