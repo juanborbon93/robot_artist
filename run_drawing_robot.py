@@ -11,8 +11,9 @@ The main steps of the script include:
 4. Tracing the edges of the generated image.
 5. Scaling the contours of the traced image to fit a canvas.
 6. Generating G-code instructions for the robot based on the scaled contours.
-7. Loading the robot simulation environment.
-8. Creating a robot program using the generated G-code and executing it.
+OPTIONAL:
+  7. Loading the robot simulation environment.
+  8. Creating a robot program using the generated G-code and executing it.
 """
 
 from project_init import SharedLogger
@@ -24,9 +25,8 @@ from speech_to_text.transcribe import record_and_transcribe
 from drawing.generate_img import generate_drawing
 from drawing.trace_edges import trace_image
 from drawing.canvas_scale import scale_contours_to_canvas
-from drawing.gcode import make_gcode
-from simulation.launch_rdk import load_station
-from simulation.robot_program import make_robot_program, draw_on_canvas
+from drawing.gcode import make_gcode, add_motion_arguments
+
 
 recordings = Recordings.load()
 
@@ -40,43 +40,53 @@ if __name__ == "__main__":
     from argparse import ArgumentParser, RawDescriptionHelpFormatter
     parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("--human-prompt", type=str, default=None, help="Prompt for the drawing (will use audio prompt if not provided)")
+    parser.add_argument("--img-path",help="Use existing image instead of generating one",type=str)
     # Note: this option does not always work quite right. Still figuring out how to make it work consistently.
-    parser.add_argument("--record-video", action="store_true", help="Record the drawing process")
-    args = parser.parse_args()
+    parser.add_argument("--record-robodk-video", action="store_true", help="Record the drawing process")
+    parser.add_argument("--robodk",help="include to use robodk simulation (skipped otherwise)",action="store_true")
+    add_motion_arguments(parser)
 
-    play_audio = args.human_prompt is None
-    if args.human_prompt:
-        human_prompt = args.human_prompt
+    args = parser.parse_args()
+    if not args.img_path:
+        play_audio = args.human_prompt is None
+        if args.human_prompt:
+            human_prompt = args.human_prompt
+        else:
+            play_audio_promp(text = "Hello! I am a drawing robot. What would you like me to draw?")
+            human_prompt = record_and_transcribe(10, "response.wav")
+            log.info(f"Transcription:\n{human_prompt}")
+            play_audio_promp(text = "Great! I will draw that for you. Please wait a moment.")
+        
+        img = generate_drawing(human_prompt)
     else:
-        play_audio_promp(text = "Hello! I am a drawing robot. What would you like me to draw?")
-        human_prompt = record_and_transcribe(10, "response.wav")
-        log.info(f"Transcription:\n{human_prompt}")
-        play_audio_promp(text = "Great! I will draw that for you. Please wait a moment.")
+        from PIL import Image
+        img = Image.open(args.img_path)
     
-    img = generate_drawing(human_prompt)
-    img.show()
-    usr_in = input("Do you like the drawing? (y/n): ")
-    if usr_in.lower() != "y":
-        log.info("User did not like the drawing. Exiting...")
-        exit()
     contours = trace_image(img)
     canvas_contours = scale_contours_to_canvas(contours,margin=100,small_area_cutoff=6.0)
-    gcode_file = make_gcode(canvas_contours)
-    rdk = load_station()
-    if play_audio:
-        play_audio_promp(text = "Drawing is ready. I will start drawing now.")
-    recorder = None
-    
-    prog = make_robot_program(gcode_file, rdk)
-    if args.record_video:
-        from recorder import RDKCameraRecorder
-        recorder = RDKCameraRecorder("Camera", rdk,5.0)
-        input("Press Enter to start recording")
-        recorder.start()
-    draw_on_canvas(rdk,prog)
-    if recorder:
-        recorder.stop()
 
+    gcode_file = make_gcode(
+        canvas_contours,
+        feedrate=args.feedrate,
+        pen_up=args.pen_up,
+        pen_down=args.pen_down,
+        min_step_mm=args.min_step_mm,
+        machine_type=args.machine_type)
 
-
-
+    if args.robodk:
+        from simulation.launch_rdk import load_station
+        from simulation.robot_program import make_robot_program, draw_on_canvas
+        rdk = load_station()
+        if play_audio:
+            play_audio_promp(text = "Drawing is ready. I will start drawing now.")
+        recorder = None
+        
+        prog = make_robot_program(gcode_file, rdk)
+        if args.record_robodk_video:
+            from recorder import RDKCameraRecorder
+            recorder = RDKCameraRecorder("Camera", rdk,5.0)
+            input("Press Enter to start recording")
+            recorder.start()
+        draw_on_canvas(rdk,prog)
+        if recorder:
+            recorder.stop()
