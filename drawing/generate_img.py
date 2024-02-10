@@ -1,4 +1,4 @@
-from project_init import SharedLogger
+from project_init import SharedLogger, LOG_DIR
 log = SharedLogger.get_logger()
 from openai import OpenAI
 import requests
@@ -15,7 +15,7 @@ def make_prompt(human_prompt):
   """
   return drawing_prompt
 
-def get_img_from_url(url):
+def get_img_from_url(url:str)->Image:
 
     # Get the content of the image
     response = requests.get(url)
@@ -28,7 +28,7 @@ def get_img_from_url(url):
         raise Exception("failed to retreive image")
     return image
 
-def generate_drawing(human_prompt):
+def generate_drawing(human_prompt:str)->Image:
     log.info(f"Generating drawing for prompt: {human_prompt}")
     prompt = make_prompt(human_prompt)
     client = OpenAI()
@@ -40,9 +40,13 @@ def generate_drawing(human_prompt):
         n=1,
     )
     image_url = response.data[0].url
-    log.info(f"Generated image at {image_url}")
-
-    return get_img_from_url(image_url)
+    log.debug(f"Generated image at {image_url}")
+    img = get_img_from_url(image_url)
+    # save 
+    save_path = LOG_DIR / "drawing.png"
+    img.save(save_path)
+    log.info(f"Saved image to {save_path}")
+    return img
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
