@@ -37,7 +37,7 @@ def draw_on_canvas(rdk,prog):
     tool = 0    # auto detect active tool
     obj = rdk.Item("canvas",robolink.ITEM_TYPE_OBJECT)
     robot = rdk.Item('UR10e', robolink.ITEM_TYPE_ROBOT)
-    rdk.Spray_Add(tool, obj, "PROJECT PARTICLE=SPHERE(1.0,8) RAND=0")
+    rdk.Spray_Add(tool, obj, "PROJECT PARTICLE=CUBE(1.0,1.0,0.2) RAND=0")
     spray_state = robolink.SPRAY_OFF
     log.info("Drawing...")
     log.info("Press CRTL+C to stop drawing")
