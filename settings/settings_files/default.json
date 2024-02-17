@@ -1,0 +1,29 @@
+{
+    "ImageGenerationSettings": {
+        "open_ai_api_key": "**********"
+    },
+    "CanvasScaleSettings": {
+        "canvas_width_mm": 550.0,
+        "canvas_height_mm": 850.0,
+        "margin_mm": 100.0,
+        "small_area_cutoff_sqr_mm": null
+    },
+    "GcodeGenerator": {
+        "feedrate_mm_per_min": 30000,
+        "pen_up_mm": 25,
+        "pen_down_mm": 0,
+        "min_step_mm": 0.2,
+        "xy_offset_mm": [
+            0.0,
+            0.0
+        ],
+        "pen_down_command": "",
+        "pen_up_command": "",
+        "start_command": "G28\nG21\nG90",
+        "end_command": ""
+    },
+    "OctoprintSettings": {
+        "octoprint_api_key": "**********",
+        "octoprint_base_url": "http://3dprinter/"
+    }
+}
