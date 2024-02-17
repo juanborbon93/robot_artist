@@ -16,7 +16,7 @@ OPTIONAL:
   8. Creating a robot program using the generated G-code and executing it.
 """
 
-from project_init import SharedLogger
+from project_init import SharedLogger, ArgParser
 
 log = SharedLogger.get_logger()
 
@@ -25,10 +25,18 @@ from speech_to_text.transcribe import record_and_transcribe
 from drawing.generate_img import generate_drawing
 from drawing.trace_edges import trace_image
 from drawing.canvas_scale import scale_contours_to_canvas
-from drawing.gcode import make_gcode, add_motion_arguments
+from drawing.gcode import GcodeGenerator
+from enum import Enum
+
+
+class MODE(Enum):
+    ROBODK = "robodk"
+    OCTOPRINT = "octoprint"
+    NO_ROBOT = "no_robot"
 
 
 recordings = Recordings.load()
+
 
 def play_audio_promp(text):
     log.info("Playing audio prompt...")
@@ -36,15 +44,34 @@ def play_audio_promp(text):
     recording = recordings.get_or_create(settings)
     recording.play()
 
+
 if __name__ == "__main__":
     from argparse import ArgumentParser, RawDescriptionHelpFormatter
-    parser = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
-    parser.add_argument("--human-prompt", type=str, default=None, help="Prompt for the drawing (will use audio prompt if not provided)")
-    parser.add_argument("--img-path",help="Use existing image instead of generating one",type=str)
-    # Note: this option does not always work quite right. Still figuring out how to make it work consistently.
-    parser.add_argument("--record-robodk-video", action="store_true", help="Record the drawing process")
-    parser.add_argument("--robodk",help="include to use robodk simulation (skipped otherwise)",action="store_true")
-    add_motion_arguments(parser)
+
+    parser = ArgParser(description=__doc__)
+    parser.add_argument(
+        "--mode",
+        type=MODE,
+        choices=list(MODE),
+        default=MODE.NO_ROBOT,
+        help="Mode to run the drawing robot in",
+    )
+    parser.add_argument(
+        "--human-prompt",
+        type=str,
+        default=None,
+        help="Prompt for the drawing (will use audio prompt if not provided)",
+    )
+    parser.add_argument(
+        "--img-path", help="Use existing image instead of generating one", type=str
+    )
+    parser.add_argument(
+        "--record-robodk-video",
+        action="store_true",
+        help="Record the drawing process (only works with ROBODK mode)",
+    )
+
+    
 
     args = parser.parse_args()
     if not args.img_path:
@@ -52,41 +79,55 @@ if __name__ == "__main__":
         if args.human_prompt:
             human_prompt = args.human_prompt
         else:
-            play_audio_promp(text = "Hello! I am a drawing robot. What would you like me to draw?")
+            play_audio_promp(
+                text="Hello! I am a drawing robot. What would you like me to draw?"
+            )
             human_prompt = record_and_transcribe(10, "response.wav")
             log.info(f"Transcription:\n{human_prompt}")
-            play_audio_promp(text = "Great! I will draw that for you. Please wait a moment.")
-        
+            play_audio_promp(
+                text="Great! I will draw that for you. Please wait a moment."
+            )
+
         img = generate_drawing(human_prompt)
+        img.show()
+        continue_drawing = input("Would you like to continue drawing? (y/n)")
+        if continue_drawing.lower() != "y":
+            log.info("User chose not to continue drawing. Exiting...")
+            exit()
     else:
         from PIL import Image
+
         img = Image.open(args.img_path)
-    
+
     contours = trace_image(img)
-    canvas_contours = scale_contours_to_canvas(contours,margin=100,small_area_cutoff=6.0)
+    canvas_contours = scale_contours_to_canvas(contours)
+    gcode_generator = GcodeGenerator.load()
+    gcode_file = gcode_generator.make_gcode_from_countours(canvas_contours)
 
-    gcode_file = make_gcode(
-        canvas_contours,
-        feedrate=args.feedrate,
-        pen_up=args.pen_up,
-        pen_down=args.pen_down,
-        min_step_mm=args.min_step_mm,
-        machine_type=args.machine_type)
+    if args.mode == MODE.NO_ROBOT:
+        log.info(f"Skipping execution on robot as mode is set to NO_ROBOT")
 
-    if args.robodk:
+    elif args.mode == MODE.OCTOPRINT:
+        from octoprint import upload_file
+
+        upload_file(str(gcode_file.absolute()))
+
+    elif args.mode == MODE.ROBODK:
         from simulation.launch_rdk import load_station
         from simulation.robot_program import make_robot_program, draw_on_canvas
+
         rdk = load_station()
         if play_audio:
-            play_audio_promp(text = "Drawing is ready. I will start drawing now.")
+            play_audio_promp(text="Drawing is ready. I will start drawing now.")
         recorder = None
-        
+
         prog = make_robot_program(gcode_file, rdk)
         if args.record_robodk_video:
             from recorder import RDKCameraRecorder
-            recorder = RDKCameraRecorder("Camera", rdk,5.0)
+
+            recorder = RDKCameraRecorder("Camera", rdk, 5.0)
             input("Press Enter to start recording")
             recorder.start()
-        draw_on_canvas(rdk,prog)
+        draw_on_canvas(rdk, prog)
         if recorder:
             recorder.stop()
