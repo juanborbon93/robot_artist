@@ -1,3 +1,10 @@
+"""
+Implements BaseSettingsModel, a base class for settings models.
+this class can be imported into other modules to create settings models.
+by calling the load method, the settings are loaded from a json file.
+multiple settings files can be used by setting the SETTINGS_NAME environment variable.
+the settings files are stored in the settings_files directory.
+"""
 from project_init import SharedLogger, LOG_DIR
 
 log = SharedLogger.get_logger()
@@ -10,7 +17,6 @@ import os
 
 SETTINGS_DIR = Path(__file__).parent
 SETTINGS_DIR.mkdir(exist_ok=True)
-DEFAULT_SETTINGS_FILE = SETTINGS_DIR / "default.json"
 
 class BaseSettingsModel(BaseModel):
 
