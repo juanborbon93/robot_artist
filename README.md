@@ -53,7 +53,8 @@ To install the RoboDK simulation software, follow these steps:
 - run `python3 run_drawing_robot.py`
 
 ```
-usage: run_drawing_robot.py [-h] [--settings-name SETTINGS_NAME] [--log-level LOG_LEVEL] [--mode {MODE.ROBODK,MODE.OCTOPRINT,MODE.NO_ROBOT}] [--human-prompt HUMAN_PROMPT] [--img-path IMG_PATH]
+usage: run_drawing_robot.py [-h] [--settings-name SETTINGS_NAME] [--log-level LOG_LEVEL]
+                            [--mode {MODE.ROBODK,MODE.OCTOPRINT,MODE.NO_ROBOT}] [--human-prompt HUMAN_PROMPT] [--img-path IMG_PATH]
                             [--record-robodk-video]
 
 This script runs a drawing robot that takes user input, generates a drawing based on the input,
@@ -69,7 +70,7 @@ The main steps of the script include:
 5. Scaling the contours of the traced image to fit a canvas.
 6. Generating G-code instructions for the robot based on the scaled contours.
 Depending on the MODE selected, the script will then execute the following steps:
-  a. Uploading the G-code to an OctoPrint server for a drawing robot connected to the server.
+  a. Uploading the G-code to an OctoPrint server for a 3D printer (set up as pen plotter) connected to the server.
   b. Loading the robot simulation environment (RoboDK) and creating a robot program using the generated G-code.
 
 options:
@@ -84,7 +85,7 @@ options:
                         Prompt for the drawing (will use audio prompt if not provided)
   --img-path IMG_PATH   Use existing image instead of generating one
   --record-robodk-video
-                        Record the drawing process (only works with ROBODK mode) (has some issues that still need to be worked out)
+                        Record the drawing process (only works with ROBODK mode)
 ```
 
 ## License

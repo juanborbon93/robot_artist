@@ -12,7 +12,7 @@ The main steps of the script include:
 5. Scaling the contours of the traced image to fit a canvas.
 6. Generating G-code instructions for the robot based on the scaled contours.
 Depending on the MODE selected, the script will then execute the following steps:
-  a. Uploading the G-code to an OctoPrint server for a drawing robot connected to the server.
+  a. Uploading the G-code to an OctoPrint server for a 3D printer (set up as pen plotter) connected to the server.
   b. Loading the robot simulation environment (RoboDK) and creating a robot program using the generated G-code.
 """
 
