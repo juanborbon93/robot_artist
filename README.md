@@ -18,13 +18,13 @@ From a technical standpoint, the project does a couple of things:
   - OCTOPRINT:
     - uploads gcode to octoprint server and starts the print automatically
 
-**WARNING: This project is intended for simulation purposes only. Operating real robot arms can be dangerous and should only be done by trained professionals in a controlled environment.**
-**Please do not attempt to use this code to operate real robot arms without proper training and precautions.**
+**WARNING: Operating real machinery can be dangerous and should only be done by trained professionals in a controlled environment. Do not attempt to use this code to operate machinery without proper training and precautions.**
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
+- [Going deeper](#going-deeper)
 - [License](#license)
 
 
@@ -48,13 +48,17 @@ To install the RoboDK simulation software, follow these steps:
 
 ## Usage
 - [Managing settings](settings/README.md)
-- Launch Robodk (`~/RoboDK/RoboDK-Start.sh`). No need to open the station as it is loaded automatically later.
+- if using robodk mode:
+  - Launch Robodk (`~/RoboDK/RoboDK-Start.sh`). No need to open the station as it is loaded automatically later.
+- if using octoprint to control a 3D printer:
+  - have a running octoprint server connected to a 3D printer
+  - [generate an application key](https://docs.octoprint.org/en/master/bundledplugins/appkeys.html) for your octoprint server
+  - Fill out the `OctoprintSettings` section of the settings file.
 - `cd` into the repository directory and run `source setup.sh` (this sets up your PYTHONPATH environment variable)
 - run `python3 run_drawing_robot.py`
 
 ```
-usage: run_drawing_robot.py [-h] [--settings-name SETTINGS_NAME] [--log-level LOG_LEVEL]
-                            [--mode {MODE.ROBODK,MODE.OCTOPRINT,MODE.NO_ROBOT}] [--human-prompt HUMAN_PROMPT] [--img-path IMG_PATH]
+usage: run_drawing_robot.py [-h] [--settings-name SETTINGS_NAME] [--log-level LOG_LEVEL] [--mode {MODE.ROBODK,MODE.OCTOPRINT,MODE.NO_ROBOT}] [--human-prompt HUMAN_PROMPT] [--img-path IMG_PATH]
                             [--record-robodk-video]
 
 This script runs a drawing robot that takes user input, generates a drawing based on the input,
@@ -70,7 +74,7 @@ The main steps of the script include:
 5. Scaling the contours of the traced image to fit a canvas.
 6. Generating G-code instructions for the robot based on the scaled contours.
 Depending on the MODE selected, the script will then execute the following steps:
-  a. Uploading the G-code to an OctoPrint server for a 3D printer (set up as pen plotter) connected to the server.
+  a. Uploading the G-code to an OctoPrint server for a drawing robot connected to the server.
   b. Loading the robot simulation environment (RoboDK) and creating a robot program using the generated G-code.
 
 options:
@@ -85,8 +89,11 @@ options:
                         Prompt for the drawing (will use audio prompt if not provided)
   --img-path IMG_PATH   Use existing image instead of generating one
   --record-robodk-video
-                        Record the drawing process (only works with ROBODK mode)
+                        Record the drawing process (only works with ROBODK mode) (has some issues that still need to be worked out)
 ```
+## Going deeper
+
+Checkout [this notebook](demo.ipynb) to see a step-by-step explanation of how the code works.
 
 ## License
 
