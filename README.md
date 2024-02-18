@@ -47,7 +47,7 @@ To install the RoboDK simulation software, follow these steps:
 3. Run the installer and follow the on-screen instructions.
 
 ## Usage
-- copy `.env.template` into `.env` and fill in the blank variables on the file
+- [Managing settings](settings/README.md)
 - Launch Robodk (`~/RoboDK/RoboDK-Start.sh`). No need to open the station as it is loaded automatically later.
 - `cd` into the repository directory and run `source setup.sh` (this sets up your PYTHONPATH environment variable)
 - run `python3 run_drawing_robot.py`
