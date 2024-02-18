@@ -1,6 +1,6 @@
 # Settings management
 This module makes it easy to define and use different configurations from json files.
-This is useful for definining configurations that can work with multiple machines.
+This is useful for definining configurations that can work with various drawing machines (3D printers, industrial robots, other CNC machines).
 **You need to modify or copy the default settings to include your open_ai_api_key for the image generation step to work**
 ## Usage
 To define a new configuration, copy the `settings_files/default.json` under the same directory. Example:
