@@ -20,6 +20,8 @@ From a technical standpoint, the project does a couple of things:
 
 **WARNING: Operating real machinery can be dangerous and should only be done by trained professionals in a controlled environment. Do not attempt to use this code to operate machinery without proper training and precautions.**
 
+Take a look at this [demo notebook](demo.ipynb) for a deeper view of how the code works
+
 ## Table of Contents
 
 - [Installation](#installation)
